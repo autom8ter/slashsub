@@ -2,6 +2,7 @@ package slashsub
 
 import (
 	"bytes"
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -9,8 +10,8 @@ import (
 	"github.com/autom8ter/api/go/api"
 	"github.com/autom8ter/gosub"
 	"github.com/autom8ter/gosub/driver"
+	"github.com/golang/protobuf/proto"
 	"github.com/nlopes/slack"
-	"context"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -20,16 +21,25 @@ import (
 	"time"
 )
 
+func init() {
+	if SERVICE == "" {
+		SERVICE ="SlashCmdService"
+	}
+	if TOPIC == "" {
+		TOPIC = "SlashCmdService"
+	}
+}
+
 var SLASH_FUNCTION_URL = "https://us-central1-autom8ter-19.cloudfunctions.net/SlashFunction"
 var PROJECT_ID = os.Getenv("PROJECT_ID")
 var SLACK_SIGNING_SECRET = []byte(os.Getenv("SLACK_SIGNING_SECRET"))
-var GRPC_SERVICE = os.Getenv("GRPC_SERVICE")
+var TOPIC = os.Getenv("TOPIC")
+var SERVICE = os.Getenv("SERVICE")
+
+type HandlerFunc func(ctx context.Context, msg *proto.Message, _ *api.Msg) error
 
 func SlashFunction(w http.ResponseWriter, r *http.Request) {
-	if GRPC_SERVICE == "" {
-		GRPC_SERVICE ="SlashCmdService"
-	}
-	s, err := New(GRPC_SERVICE, nil)
+	s, err := New()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -42,7 +52,7 @@ type SlashSub struct {
 	pubsub *driver.Client
 }
 
-func New(service string, middlewares ...driver.Middleware) (*SlashSub, error) {
+func New(middlewares ...driver.Middleware) (*SlashSub, error) {
 	provider, err := gosub.NewGoSub(PROJECT_ID)
 	if err != nil {
 		return nil, err
@@ -51,7 +61,7 @@ func New(service string, middlewares ...driver.Middleware) (*SlashSub, error) {
 	s := &SlashSub{
 		secret: SLACK_SIGNING_SECRET,
 		pubsub: &driver.Client{
-			ServiceName: service,
+			ServiceName: SERVICE,
 			Provider:    provider,
 			Middleware:  middlewares,
 		},
@@ -61,8 +71,17 @@ func New(service string, middlewares ...driver.Middleware) (*SlashSub, error) {
 
 }
 
-func (s *SlashSub) Client() *driver.Client {
-	return s.pubsub
+func (s *SlashSub) Subscribe(jSON bool, handler HandlerFunc) {
+	opts := driver.HandlerOptions{
+		Topic:       TOPIC,
+		Name:        SERVICE,
+		ServiceName: SERVICE,
+		Handler:     handler,
+		Concurrency: 50,
+		AutoAck:     true,
+		JSON:        jSON,
+	}
+	s.pubsub.On(opts)
 }
 
 func (s *SlashSub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -163,4 +182,3 @@ func  (s *SlashSub) ValidateRequest(r *http.Request) bool {
 	// Verify our hash matches the signature.
 	return hmac.Equal(hash.Sum(nil), []byte(signature))
 }
-

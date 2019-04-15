@@ -6,11 +6,11 @@
 ## Usage
 
 ```go
-var GRPC_SERVICE = os.Getenv("GRPC_SERVICE")
+var PROJECT_ID = os.Getenv("PROJECT_ID")
 ```
 
 ```go
-var PROJECT_ID = os.Getenv("PROJECT_ID")
+var SERVICE = os.Getenv("SERVICE")
 ```
 
 ```go
@@ -21,11 +21,22 @@ var SLACK_SIGNING_SECRET = []byte(os.Getenv("SLACK_SIGNING_SECRET"))
 var SLASH_FUNCTION_URL = "https://us-central1-autom8ter-19.cloudfunctions.net/SlashFunction"
 ```
 
+```go
+var TOPIC = os.Getenv("TOPIC")
+```
+
 #### func  SlashFunction
 
 ```go
 func SlashFunction(w http.ResponseWriter, r *http.Request)
 ```
+
+#### type HandlerFunc
+
+```go
+type HandlerFunc func(ctx context.Context, msg *proto.Message, _ *api.Msg) error
+```
+
 
 #### type SlashSub
 
@@ -38,13 +49,7 @@ type SlashSub struct {
 #### func  New
 
 ```go
-func New(service string, middlewares ...driver.Middleware) (*SlashSub, error)
-```
-
-#### func (*SlashSub) Client
-
-```go
-func (s *SlashSub) Client() *driver.Client
+func New(middlewares ...driver.Middleware) (*SlashSub, error)
 ```
 
 #### func (*SlashSub) ListenAndServe
@@ -57,6 +62,12 @@ func (s *SlashSub) ListenAndServe(addr string) error
 
 ```go
 func (s *SlashSub) ServeHTTP(w http.ResponseWriter, r *http.Request)
+```
+
+#### func (*SlashSub) Subscribe
+
+```go
+func (s *SlashSub) Subscribe(jSON bool, handler HandlerFunc)
 ```
 
 #### func (*SlashSub) ValidateRequest
