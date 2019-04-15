@@ -23,9 +23,13 @@ import (
 var SLASH_FUNCTION_URL = "https://us-central1-autom8ter-19.cloudfunctions.net/SlashFunction"
 var PROJECT_ID = os.Getenv("PROJECT_ID")
 var SLACK_SIGNING_SECRET = []byte(os.Getenv("SLACK_SIGNING_SECRET"))
+var GRPC_SERVICE = os.Getenv("GRPC_SERVICE")
 
 func SlashFunction(w http.ResponseWriter, r *http.Request) {
-	s, err := New("SlashCmdService", nil)
+	if GRPC_SERVICE == "" {
+		GRPC_SERVICE ="SlashCmdService"
+	}
+	s, err := New(GRPC_SERVICE, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

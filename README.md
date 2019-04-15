@@ -6,6 +6,10 @@
 ## Usage
 
 ```go
+var GRPC_SERVICE = os.Getenv("GRPC_SERVICE")
+```
+
+```go
 var PROJECT_ID = os.Getenv("PROJECT_ID")
 ```
 
