@@ -2,6 +2,7 @@ package slashsub
 
 import (
 	"context"
+	"fmt"
 	"github.com/autom8ter/api/go/api"
 	"github.com/autom8ter/gosub"
 	"github.com/autom8ter/gosub/driver"
@@ -69,6 +70,7 @@ func handler() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		fmt.Fprint(w, "command parsed and sent to backend for processing!")
 	}
 }
 
@@ -88,6 +90,7 @@ func (s *SlashSub) Client() *driver.Client {
 func (s *SlashSub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	handler()(w, r)
 }
+
 
 func (s *SlashSub) ListenAndServe(addr string) error {
 	return http.ListenAndServe(addr, s)
