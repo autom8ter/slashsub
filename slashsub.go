@@ -11,13 +11,26 @@ import (
 )
 
 type SlashSub struct {
-	pubsub driver.Provider
+	Project string
+	pubsub *driver.Client
 }
 
-func  (s *SlashSub) New(sub *gosub.GoSub) (*SlashSub) {
-	return &SlashSub{
-		pubsub: sub,
+func New(projectid, service string, middlewares ...driver.Middleware) (*SlashSub, error) {
+	provider, err := gosub.NewGoSub(projectid)
+	if err != nil {
+		return nil, err
 	}
+
+	s := &SlashSub{
+		pubsub: &driver.Client{
+			ServiceName: service,
+			Provider:    provider,
+			Middleware: middlewares,
+		},
+	}
+	driver.SetClient(s.pubsub)
+	return s, nil
+
 }
 
 func (s *SlashSub) HandlerFunc(ctx context.Context, topic string) http.HandlerFunc {
@@ -57,10 +70,10 @@ func (s *SlashSub) HandlerFunc(ctx context.Context, topic string) http.HandlerFu
 
 
 func (s *SlashSub) Router(ctx context.Context, topics []string) *mux.Router {
-	mux := mux.NewRouter()
+	rout := mux.NewRouter()
 	for _, t := range topics {
-		mux.Handle("/"+t, s.HandlerFunc(ctx, t))
+		rout.Handle("/"+t, s.HandlerFunc(ctx, t))
 	}
-	return mux
+	return rout
 }
 
