@@ -12,7 +12,8 @@ import (
 
 type SlashSub struct {
 	Project string
-	pubsub *driver.Client
+	pubsub  *driver.Client
+	router  *mux.Router
 }
 
 func New(projectid, service string, middlewares ...driver.Middleware) (*SlashSub, error) {
@@ -25,7 +26,7 @@ func New(projectid, service string, middlewares ...driver.Middleware) (*SlashSub
 		pubsub: &driver.Client{
 			ServiceName: service,
 			Provider:    provider,
-			Middleware: middlewares,
+			Middleware:  middlewares,
 		},
 	}
 	driver.SetClient(s.pubsub)
@@ -33,27 +34,27 @@ func New(projectid, service string, middlewares ...driver.Middleware) (*SlashSub
 
 }
 
-func (s *SlashSub) HandlerFunc(ctx context.Context, topic string) http.HandlerFunc {
+func (s *SlashSub) handlerFunc(ctx context.Context, topic string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cmd,err := slack.SlashCommandParse(r)
+		cmd, err := slack.SlashCommandParse(r)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		slashcmd := &api.SlashCommand{
-			Token:                cmd.Token,
-			TeamId:               cmd.TeamID,
-			TeamDomain:           cmd.TeamDomain,
-			EnterpriseId:         cmd.EnterpriseID,
-			EnterpriseName:       cmd.EnterpriseName,
-			ChannelId:            cmd.ChannelID,
-			ChannelName:          cmd.ChannelName,
-			UserId:               cmd.UserID,
-			UserName:             cmd.UserName,
-			Command:              cmd.Command,
-			Text:                 cmd.Text,
-			ResponseUrl:          cmd.ResponseURL,
-			TriggerId:            cmd.TriggerID,
+			Token:          cmd.Token,
+			TeamId:         cmd.TeamID,
+			TeamDomain:     cmd.TeamDomain,
+			EnterpriseId:   cmd.EnterpriseID,
+			EnterpriseName: cmd.EnterpriseName,
+			ChannelId:      cmd.ChannelID,
+			ChannelName:    cmd.ChannelName,
+			UserId:         cmd.UserID,
+			UserName:       cmd.UserName,
+			Command:        cmd.Command,
+			Text:           cmd.Text,
+			ResponseUrl:    cmd.ResponseURL,
+			TriggerId:      cmd.TriggerID,
 		}
 		attrs := make(map[string]string)
 		for _, v := range r.Cookies() {
@@ -68,12 +69,19 @@ func (s *SlashSub) HandlerFunc(ctx context.Context, topic string) http.HandlerFu
 	}
 }
 
+func (s *SlashSub) Router() *mux.Router {
 
-func (s *SlashSub) Router(ctx context.Context, topics []string) *mux.Router {
-	rout := mux.NewRouter()
-	for _, t := range topics {
-		rout.Handle("/"+t, s.HandlerFunc(ctx, t))
-	}
-	return rout
+	return s.router
 }
 
+func (s *SlashSub) Handler() http.Handler {
+	return s.router
+}
+
+func (s *SlashSub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	s.Handler().ServeHTTP(w, r)
+}
+
+func (s *SlashSub) ListenAndServe(addr string) error {
+	return http.ListenAndServe(addr, s.router)
+}
