@@ -5,7 +5,6 @@ import (
 	"github.com/autom8ter/api/go/api"
 	"github.com/autom8ter/gosub"
 	"github.com/autom8ter/gosub/driver"
-	"github.com/gorilla/mux"
 	"github.com/nlopes/slack"
 	"net/http"
 )
@@ -13,7 +12,6 @@ import (
 type SlashSub struct {
 	Project string
 	pubsub  *driver.Client
-	router  *mux.Router
 }
 
 func New(projectid, service string, middlewares ...driver.Middleware) (*SlashSub, error) {
@@ -23,6 +21,7 @@ func New(projectid, service string, middlewares ...driver.Middleware) (*SlashSub
 	}
 
 	s := &SlashSub{
+		Project: "",
 		pubsub: &driver.Client{
 			ServiceName: service,
 			Provider:    provider,
@@ -34,7 +33,7 @@ func New(projectid, service string, middlewares ...driver.Middleware) (*SlashSub
 
 }
 
-func (s *SlashSub) handlerFunc(ctx context.Context, topic string) http.HandlerFunc {
+func HandlerFunc(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cmd, err := slack.SlashCommandParse(r)
 		if err != nil {
@@ -61,7 +60,7 @@ func (s *SlashSub) handlerFunc(ctx context.Context, topic string) http.HandlerFu
 			attrs[v.Name] = v.Value
 		}
 
-		res := driver.Publish(ctx, topic, slashcmd)
+		res := driver.Publish(ctx, slashcmd.Command, slashcmd)
 		if res.Err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -69,19 +68,14 @@ func (s *SlashSub) handlerFunc(ctx context.Context, topic string) http.HandlerFu
 	}
 }
 
-func (s *SlashSub) Router() *mux.Router {
-
-	return s.router
-}
-
-func (s *SlashSub) Handler() http.Handler {
-	return s.router
+func (s *SlashSub) Client() *driver.Client {
+	return s.pubsub
 }
 
 func (s *SlashSub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.Handler().ServeHTTP(w, r)
+	HandlerFunc(context.Background())
 }
 
 func (s *SlashSub) ListenAndServe(addr string) error {
-	return http.ListenAndServe(addr, s.router)
+	return http.ListenAndServe(addr, s)
 }
