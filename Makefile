@@ -6,10 +6,10 @@ check: ## check
 	go test ./...
 
 deploy:
-	gcloud functions deploy SlashFunction --runtime go111 --trigger-http
+	gcloud functions deploy functions/SlashFunction --runtime go111 --trigger-http
 
 describe:
-	gcloud functions describe SlashFunction
+	gcloud functions describe functions/SlashFunction
 
 .PHONY: help
 help:	## show this help

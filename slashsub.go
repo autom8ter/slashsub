@@ -23,18 +23,19 @@ import (
 
 func init() {
 	if SERVICE == "" {
-		SERVICE ="SlashService"
+		SERVICE = "SlashService"
 	}
 	if TOPIC == "" {
 		TOPIC = "Slash"
 	}
 }
 
-var SLASH_FUNCTION_URL = "https://us-central1-autom8ter-19.cloudfunctions.net/SlashFunction"
-var PROJECT_ID = os.Getenv("PROJECT_ID")
-var SLACK_SIGNING_SECRET = []byte(os.Getenv("SLACK_SIGNING_SECRET"))
-var TOPIC = os.Getenv("TOPIC")
-var SERVICE = os.Getenv("SERVICE")
+var (
+	PROJECT_ID           = os.Getenv("PROJECT_ID")
+	SLACK_SIGNING_SECRET = []byte(os.Getenv("SLACK_SIGNING_SECRET"))
+	TOPIC                = os.Getenv("TOPIC")
+	SERVICE              = os.Getenv("SERVICE")
+)
 
 type HandlerFunc func(ctx context.Context, msg *proto.Message, published *api.Msg) error
 
@@ -43,7 +44,7 @@ func NewHandlerFunc(fn func(ctx context.Context, msg *proto.Message, published *
 }
 
 func (h HandlerFunc) Chain(next ...HandlerFunc) {
-	h= func(ctx context.Context, msg *proto.Message, published *api.Msg) error {
+	h = func(ctx context.Context, msg *proto.Message, published *api.Msg) error {
 		if err := h(ctx, msg, published); err != nil {
 			return err
 		}
@@ -54,15 +55,6 @@ func (h HandlerFunc) Chain(next ...HandlerFunc) {
 		}
 		return nil
 	}
-}
-
-func SlashFunction(w http.ResponseWriter, r *http.Request) {
-	s, err := New()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	s.ServeHTTP(w, r)
 }
 
 type SlashSub struct {
@@ -149,7 +141,7 @@ func handler() http.HandlerFunc {
 	}
 }
 
-func  (s *SlashSub) ValidateRequest(r *http.Request) bool {
+func (s *SlashSub) ValidateRequest(r *http.Request) bool {
 	timestamp := r.Header["X-Slack-Request-Timestamp"][0]
 
 	// Verify the timestamp is less than 5 minutes old, to avoid replay attacks.
