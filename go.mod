@@ -1,8 +1,8 @@
 module github.com/autom8ter/slashsub
 
 require (
-	github.com/autom8ter/api v0.0.0-20190415191456-8c8edd369b03
-	github.com/autom8ter/gosub v0.0.0-20190415174126-87ca72fe5c21
+	github.com/autom8ter/api v0.0.0-20190415191723-a83e0eb89dc6
+	github.com/autom8ter/gosub v0.0.0-20190415191754-0965e79fe132
 	github.com/codegangsta/negroni v1.0.0 // indirect
 	github.com/golang/protobuf v1.3.1
 	github.com/gorilla/websocket v1.4.0 // indirect

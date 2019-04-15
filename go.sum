@@ -31,6 +31,8 @@ github.com/autom8ter/api v0.0.0-20190415081401-f1642e63289d h1:+1ia1+CcNTV0cLaW7
 github.com/autom8ter/api v0.0.0-20190415081401-f1642e63289d/go.mod h1:vTlaDdn7TZvSF37bPrbyKBteQGEA4LhZh0+G27MZh5I=
 github.com/autom8ter/api v0.0.0-20190415191456-8c8edd369b03 h1:o8gpjVE2kvsvU69NU/NT6ZzgYFV9yATKoQ8YSOUwR20=
 github.com/autom8ter/api v0.0.0-20190415191456-8c8edd369b03/go.mod h1:vTlaDdn7TZvSF37bPrbyKBteQGEA4LhZh0+G27MZh5I=
+github.com/autom8ter/api v0.0.0-20190415191723-a83e0eb89dc6 h1:x/nnILXu+M3HgtHZjrHF7EIqk3Ash6d+r4EDbiB8N7I=
+github.com/autom8ter/api v0.0.0-20190415191723-a83e0eb89dc6/go.mod h1:vTlaDdn7TZvSF37bPrbyKBteQGEA4LhZh0+G27MZh5I=
 github.com/autom8ter/engine v0.0.0-20190415024113-50822e48d499 h1:itVnlk2qRRgsU2S5eI0I3BugIdGBBSDzsQJ2Kc5Mu08=
 github.com/autom8ter/engine v0.0.0-20190415024113-50822e48d499/go.mod h1:7WCjaTtYg+ttqSawFX9UtwmMqYj7foyDn8UBWLvSjWo=
 github.com/autom8ter/gcloud v0.0.0-20190408073117-8b7a9496ac0d/go.mod h1:Hb/MgbCi+SaG4fi5txfqEkwooaNpxENTv96kNqiNbx0=
@@ -38,6 +40,10 @@ github.com/autom8ter/gosub v0.0.0-20190415081656-dfc42b6e0c79 h1:VAlnrGSbRwMaNOl
 github.com/autom8ter/gosub v0.0.0-20190415081656-dfc42b6e0c79/go.mod h1:E3040tzUuMdeT/tpeK+sCZa0+VVSHxJCgAM+MmmrqBs=
 github.com/autom8ter/gosub v0.0.0-20190415174126-87ca72fe5c21 h1:FQxUOezigeZEcvtJExNBQX+VQrhi4LnHmg9fHMok8p0=
 github.com/autom8ter/gosub v0.0.0-20190415174126-87ca72fe5c21/go.mod h1:E3040tzUuMdeT/tpeK+sCZa0+VVSHxJCgAM+MmmrqBs=
+github.com/autom8ter/gosub v0.0.0-20190415191524-ff6e716218d7 h1:OiJ45R/Chkf5/lzLz4q2wY/0e6QE1WDFeMm/qDdwbvA=
+github.com/autom8ter/gosub v0.0.0-20190415191524-ff6e716218d7/go.mod h1:+o4MeXF5yXw3d/ZpQsno8chVD0HftkMe9PZY8ADg+3U=
+github.com/autom8ter/gosub v0.0.0-20190415191754-0965e79fe132 h1:mUhBMCVOEHCknSZpC2rG3Dro82XTbP9zHs3n7MDOS5U=
+github.com/autom8ter/gosub v0.0.0-20190415191754-0965e79fe132/go.mod h1:98LkUF7v1dQt2gwbE5MuU0HXVIh487kmtuOHcthlD7A=
 github.com/autom8ter/objectify v0.0.0-20190408065719-a9ebead75a53/go.mod h1:EAzDHsLulh41WBS3lcJgenwdK21Ep+/KqiiGvWC/lCQ=
 github.com/autom8ter/objectify v0.0.0-20190408071719-79ea764cf5ba/go.mod h1:EAzDHsLulh41WBS3lcJgenwdK21Ep+/KqiiGvWC/lCQ=
 github.com/autom8ter/objectify v0.0.0-20190415004124-24343395b7d6 h1:Wv2kUec92MdL0sBggnORTuMZdeLQK6GZE6T3v3qzI3I=
@@ -79,6 +85,7 @@ github.com/go-playground/locales v0.12.1/go.mod h1:IUMDtCfWo/w/mtMfIE/IG2K+Ey3yg
 github.com/go-playground/universal-translator v0.16.0 h1:X++omBR/4cE2MNg91AoC3rmGrCjJ8eAeUP/K/EKx4DM=
 github.com/go-playground/universal-translator v0.16.0/go.mod h1:1AnU7NaIRDWWzGEKwgtJRd2xk99HeFyHw3yid4rvQIY=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
+github.com/gofrs/uuid v3.2.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/gogo/protobuf v1.1.1/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
 github.com/gogo/protobuf v1.2.0 h1:xU6/SpYbvkNYiptHJYEDRseDLvYE7wSqhYYNy0QSUzI=
 github.com/gogo/protobuf v1.2.0/go.mod h1:r8qH/GZQm5c6nD/R0oafs1akxWv10x8SbQlK7atdtwQ=
