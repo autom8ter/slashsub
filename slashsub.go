@@ -7,6 +7,7 @@ import (
 	"github.com/autom8ter/gosub/driver"
 	"github.com/nlopes/slack"
 	"net/http"
+	"os"
 )
 
 type SlashSub struct {
@@ -14,8 +15,8 @@ type SlashSub struct {
 	pubsub  *driver.Client
 }
 
-func New(projectid, service string, middlewares ...driver.Middleware) (*SlashSub, error) {
-	provider, err := gosub.NewGoSub(projectid)
+func New(service string, middlewares ...driver.Middleware) (*SlashSub, error) {
+	provider, err := gosub.NewGoSub(os.Getenv("GCP_PROJECT"))
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +34,7 @@ func New(projectid, service string, middlewares ...driver.Middleware) (*SlashSub
 
 }
 
-func HandlerFunc(ctx context.Context) http.HandlerFunc {
+func handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cmd, err := slack.SlashCommandParse(r)
 		if err != nil {
@@ -60,7 +61,7 @@ func HandlerFunc(ctx context.Context) http.HandlerFunc {
 			attrs[v.Name] = v.Value
 		}
 
-		res := driver.Publish(ctx, slashcmd.Command, slashcmd)
+		res := driver.Publish(context.Background(), slashcmd.Command, slashcmd)
 		if res.Err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -68,12 +69,21 @@ func HandlerFunc(ctx context.Context) http.HandlerFunc {
 	}
 }
 
+func SlashFunction(w http.ResponseWriter, r *http.Request) {
+	s, err := New("slash", nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	s.ServeHTTP(w, r)
+}
+
 func (s *SlashSub) Client() *driver.Client {
 	return s.pubsub
 }
 
 func (s *SlashSub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	HandlerFunc(context.Background())
+	handler()(w, r)
 }
 
 func (s *SlashSub) ListenAndServe(addr string) error {
