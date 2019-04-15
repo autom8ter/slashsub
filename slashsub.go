@@ -70,7 +70,7 @@ func handler() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Fprint(w, "command parsed and sent to backend for processing!")
+		fmt.Fprintf(w, "%s\n", "command parsed and sent to backend for processing!")
 	}
 }
 
