@@ -10,13 +10,16 @@ import (
 	"os"
 )
 
+var FunctionsURL = "https://us-central1-autom8ter-19.cloudfunctions.net/SlashFunction"
+var ProjectId = os.Getenv("PROJECT_ID")
+
 type SlashSub struct {
 	Project string
 	pubsub  *driver.Client
 }
 
 func New(service string, middlewares ...driver.Middleware) (*SlashSub, error) {
-	provider, err := gosub.NewGoSub(os.Getenv("GCP_PROJECT"))
+	provider, err := gosub.NewGoSub(ProjectId)
 	if err != nil {
 		return nil, err
 	}
