@@ -70,12 +70,12 @@ func handler() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Fprintf(w, "%s\n", "command parsed and sent to backend for processing!")
+		fmt.Fprintf(w, "%s\n", "command parsed and sent to backend for processing ✔")
 	}
 }
 
 func SlashFunction(w http.ResponseWriter, r *http.Request) {
-	s, err := New("slash", nil)
+	s, err := New("SlashCmdService", nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
