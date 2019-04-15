@@ -23,10 +23,10 @@ import (
 
 func init() {
 	if SERVICE == "" {
-		SERVICE ="SlashCmdService"
+		SERVICE ="SlashService"
 	}
 	if TOPIC == "" {
-		TOPIC = "SlashCmdService"
+		TOPIC = "Slash"
 	}
 }
 
@@ -36,7 +36,25 @@ var SLACK_SIGNING_SECRET = []byte(os.Getenv("SLACK_SIGNING_SECRET"))
 var TOPIC = os.Getenv("TOPIC")
 var SERVICE = os.Getenv("SERVICE")
 
-type HandlerFunc func(ctx context.Context, msg *proto.Message, _ *api.Msg) error
+type HandlerFunc func(ctx context.Context, msg *proto.Message, published *api.Msg) error
+
+func NewHandlerFunc(fn func(ctx context.Context, msg *proto.Message, published *api.Msg) error) HandlerFunc {
+	return fn
+}
+
+func (h HandlerFunc) Chain(next ...HandlerFunc) {
+	h= func(ctx context.Context, msg *proto.Message, published *api.Msg) error {
+		if err := h(ctx, msg, published); err != nil {
+			return err
+		}
+		for _, h := range next {
+			if err := h(ctx, msg, published); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+}
 
 func SlashFunction(w http.ResponseWriter, r *http.Request) {
 	s, err := New()
@@ -87,10 +105,6 @@ func (s *SlashSub) Subscribe(jSON bool, handler HandlerFunc) {
 func (s *SlashSub) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.ValidateRequest(r)
 	handler()(w, r)
-}
-
-func (s *SlashSub) ListenAndServe(addr string) error {
-	return http.ListenAndServe(addr, s)
 }
 
 func handler() http.HandlerFunc {
